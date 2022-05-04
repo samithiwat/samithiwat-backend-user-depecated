@@ -1,0 +1,10 @@
+database:
+  host: localhost
+  port: 3306
+  name: fecamp-user
+  username: admin
+  password: password
+
+app:
+  port: 3002
+  debug: true
