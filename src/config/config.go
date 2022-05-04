@@ -14,6 +14,11 @@ type Database struct {
 	SSL      string `mapstructure:"ssl"`
 }
 
+type Redis struct {
+	Host string `mapstructure:"host"`
+	Port int    `mapstructure:"port"`
+}
+
 type App struct {
 	Port  int  `mapstructure:"port"`
 	Debug bool `mapstructure:"debug"`
@@ -21,6 +26,7 @@ type App struct {
 
 type Config struct {
 	Database Database `mapstructure:"database"`
+	Redis    Redis    `mapstructure:"redis"`
 	App      App      `mapstructure:"app"`
 }
 
