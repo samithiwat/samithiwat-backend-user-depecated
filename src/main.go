@@ -84,7 +84,7 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	usrRepo := repository.NewUserRepository(db)
+	usrRepo := repository.NewUserRepository(db, cache)
 	usrSrv := service.NewUserService(usrRepo)
 
 	grpcServer := grpc.NewServer()
