@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"github.com/samithiwat/samithiwat-backend-user/src/config"
 	"github.com/samithiwat/samithiwat-backend-user/src/database"
+	"github.com/samithiwat/samithiwat-backend-user/src/proto"
+	"github.com/samithiwat/samithiwat-backend-user/src/repository"
+	"github.com/samithiwat/samithiwat-backend-user/src/service"
 	"google.golang.org/grpc"
 	"log"
 	"net"
@@ -81,7 +84,12 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
+	usrRepo := repository.NewUserRepository(db)
+	usrSrv := service.NewUserService(usrRepo)
+
 	grpcServer := grpc.NewServer()
+
+	proto.RegisterUserServiceServer(grpcServer, usrSrv)
 
 	go func() {
 		fmt.Println(fmt.Sprintf("samithiwat user service starting at port %v", conf.App.Port))
