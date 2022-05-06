@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"github.com/go-redis/redis/v8"
 	"github.com/samithiwat/samithiwat-backend-user/src/model"
 	"github.com/samithiwat/samithiwat-backend-user/src/proto"
 	"gorm.io/gorm"
@@ -8,15 +9,33 @@ import (
 )
 
 type UserRepository struct {
-	db *gorm.DB
+	db    *gorm.DB
+	cache *redis.Client
 }
 
-func NewUserRepository(db *gorm.DB) *UserRepository {
-	return &UserRepository{db: db}
+func NewUserRepository(db *gorm.DB, cache *redis.Client) *UserRepository {
+	return &UserRepository{
+		db:    db,
+		cache: cache,
+	}
 }
 
 func (r *UserRepository) FindAll(meta *proto.PaginationMetadata, users *[]*model.User) error {
-	return r.db.Scopes(Pagination(users, meta)).Find(&users).Count(&meta.ItemCount).Error
+	err := GetCache(r.cache, "users", users)
+	if err != nil {
+		if err != redis.Nil {
+			return err
+		}
+
+		err = r.db.Scopes(Pagination(users, meta)).Find(&users).Count(&meta.ItemCount).Error
+		if err != nil {
+			return err
+		}
+
+		return SaveCache(r.cache, "users", users)
+	}
+
+	return nil
 }
 
 func (r *UserRepository) FindOne(id uint, user *model.User) error {
@@ -24,7 +43,21 @@ func (r *UserRepository) FindOne(id uint, user *model.User) error {
 }
 
 func (r *UserRepository) FindMulti(ids []uint32, users *[]*model.User) error {
-	return r.db.Where("id IN ?", ids).Find(&users).Error
+	err := GetCache(r.cache, "users", users)
+	if err != nil {
+		if err != redis.Nil {
+			return err
+		}
+
+		err = r.db.Where("id IN ?", ids).Find(&users).Error
+		if err != nil {
+			return err
+		}
+
+		return SaveCache(r.cache, "users", users)
+	}
+
+	return nil
 }
 
 func (r *UserRepository) Create(user *model.User) error {
