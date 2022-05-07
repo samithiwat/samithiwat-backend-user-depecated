@@ -33,7 +33,7 @@ func TestFindOneTeam(t *testing.T) {
 func TestFindOneErrGrpcTeam(t *testing.T) {
 	mock.InitializeMockTeam()
 
-	errors := []string{"Not found location", "Grpc error"}
+	errors := []string{"Not found team", "Grpc error"}
 
 	assert := assert.New(t)
 	want := &proto.TeamResponse{

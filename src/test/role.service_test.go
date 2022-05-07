@@ -33,7 +33,7 @@ func TestFindOneRole(t *testing.T) {
 func TestFindOneErrGrpcRole(t *testing.T) {
 	mock.InitializeMockRole()
 
-	errors := []string{"Not found location", "Grpc error"}
+	errors := []string{"Not found role", "Grpc error"}
 
 	assert := assert.New(t)
 	want := &proto.RoleResponse{

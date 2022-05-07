@@ -33,7 +33,7 @@ func TestFindOneOrganization(t *testing.T) {
 func TestFindOneErrGrpcOrganization(t *testing.T) {
 	mock.InitializeMockOrganization()
 
-	errors := []string{"Not found location", "Grpc error"}
+	errors := []string{"Not found organization", "Grpc error"}
 
 	assert := assert.New(t)
 	want := &proto.OrganizationResponse{

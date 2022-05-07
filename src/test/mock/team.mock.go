@@ -60,7 +60,7 @@ func (c *TeamMockErrClient) FindAll(ctx context.Context, in *proto.FindAllTeamRe
 func (*TeamMockErrClient) FindOne(_ context.Context, in *proto.FindOneTeamRequest, opts ...grpc.CallOption) (*proto.TeamResponse, error) {
 	return &proto.TeamResponse{
 		StatusCode: http.StatusNotFound,
-		Errors:     []string{"Not found organization"},
+		Errors:     []string{"Not found team"},
 		Data:       nil,
 	}, errors.New("Grpc error")
 }

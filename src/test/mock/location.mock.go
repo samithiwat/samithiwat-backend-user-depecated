@@ -52,7 +52,7 @@ type LocationMockErrClient struct {
 func (*LocationMockErrClient) FindOne(_ context.Context, in *proto.FindOneLocationRequest, opts ...grpc.CallOption) (*proto.LocationResponse, error) {
 	return &proto.LocationResponse{
 		StatusCode: http.StatusNotFound,
-		Errors:     []string{"Not found contact"},
+		Errors:     []string{"Not found location"},
 		Data:       nil,
 	}, errors.New("Grpc error")
 }

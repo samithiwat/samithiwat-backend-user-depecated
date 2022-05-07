@@ -60,7 +60,7 @@ func (c *RoleMockErrClient) FindAll(ctx context.Context, in *proto.FindAllRoleRe
 func (*RoleMockErrClient) FindOne(_ context.Context, in *proto.FindOneRoleRequest, opts ...grpc.CallOption) (*proto.RoleResponse, error) {
 	return &proto.RoleResponse{
 		StatusCode: http.StatusNotFound,
-		Errors:     []string{"Not found contact"},
+		Errors:     []string{"Not found role"},
 		Data:       nil,
 	}, errors.New("Grpc error")
 }
