@@ -15,7 +15,7 @@ func Pagination(value interface{}, meta *model.PaginationMetadata, db *gorm.DB) 
 	db.Model(&value).Count(&totalItems)
 
 	meta.TotalItem = totalItems
-	totalPages := math.Ceil(float64(totalItems) / float64(meta.ItemsPerPage))
+	totalPages := math.Ceil(float64(totalItems) / float64(meta.GetItemPerPage()))
 	meta.TotalPage = int64(totalPages)
 
 	return func(db *gorm.DB) *gorm.DB {

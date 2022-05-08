@@ -17,7 +17,7 @@ func InitDatabase(conf *config.Database) (gormDb *gorm.DB, err error) {
 		return
 	}
 
-	err = gormDb.AutoMigrate(model.User{})
+	err = gormDb.AutoMigrate(model.User{}, model.Contact{}, model.Location{}, model.Role{}, model.Organization{}, model.Team{})
 	if err != nil {
 		return
 	}
