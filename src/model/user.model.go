@@ -8,3 +8,8 @@ type User struct {
 	Lastname  string `json:"lastname"`
 	ImageUrl  string `json:"image_url"`
 }
+
+type UserPagination struct {
+	Items *[]*User
+	Meta  PaginationMetadata
+}
