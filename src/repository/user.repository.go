@@ -3,7 +3,6 @@ package repository
 import (
 	"github.com/go-redis/redis/v8"
 	"github.com/samithiwat/samithiwat-backend-user/src/model"
-	"github.com/samithiwat/samithiwat-backend-user/src/proto"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -20,19 +19,19 @@ func NewUserRepository(db *gorm.DB, cache *redis.Client) *UserRepository {
 	}
 }
 
-func (r *UserRepository) FindAll(meta *proto.PaginationMetadata, users *[]*model.User) error {
-	err := GetCache(r.cache, "users", users)
+func (r *UserRepository) FindAll(pagination *model.UserPagination) error {
+	err := GetCache(r.cache, "users", pagination)
 	if err != nil {
 		if err != redis.Nil {
 			return err
 		}
 
-		err = r.db.Scopes(Pagination(users, meta)).Find(&users).Count(&meta.ItemCount).Error
+		err = r.db.Scopes(Pagination(&pagination.Items, &pagination.Meta, r.db)).Find(&pagination.Items).Count(&pagination.Meta.ItemCount).Error
 		if err != nil {
 			return err
 		}
 
-		return SaveCache(r.cache, "users", users)
+		return SaveCache(r.cache, "users", pagination)
 	}
 
 	return nil

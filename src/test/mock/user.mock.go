@@ -19,14 +19,14 @@ var UpdateUserReqMock proto.UpdateUserRequest
 type UserMockRepo struct {
 }
 
-func (*UserMockRepo) FindAll(meta *proto.PaginationMetadata, users *[]*model.User) error {
-	meta.CurrentPage = 1
-	meta.TotalPage = 1
-	meta.ItemCount = 4
-	meta.TotalItem = 4
-	meta.ItemsPerPage = 10
+func (*UserMockRepo) FindAll(pagination *model.UserPagination) error {
+	pagination.Meta.CurrentPage = 1
+	pagination.Meta.TotalPage = 1
+	pagination.Meta.ItemCount = 4
+	pagination.Meta.TotalItem = 4
+	pagination.Meta.ItemsPerPage = 10
 
-	*users = Users
+	*pagination.Items = Users
 	return nil
 }
 
@@ -58,7 +58,7 @@ func (*UserMockRepo) Delete(_ uint, user *model.User) error {
 type UserMockErrRepo struct {
 }
 
-func (*UserMockErrRepo) FindAll(meta *proto.PaginationMetadata, users *[]*model.User) error {
+func (*UserMockErrRepo) FindAll(pagination *model.UserPagination) error {
 	return nil
 }
 

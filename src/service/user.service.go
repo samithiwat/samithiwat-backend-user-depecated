@@ -12,7 +12,7 @@ type UserService struct {
 }
 
 type UserRepository interface {
-	FindAll(*proto.PaginationMetadata, *[]*model.User) error
+	FindAll(pagination *model.UserPagination) error
 	FindOne(uint, *model.User) error
 	FindMulti([]uint32, *[]*model.User) error
 	Create(*model.User) error
@@ -27,25 +27,27 @@ func NewUserService(repository UserRepository) *UserService {
 }
 
 func (s *UserService) FindAll(_ context.Context, req *proto.FindAllUserRequest) (res *proto.UserPaginationResponse, err error) {
-
-	meta := proto.PaginationMetadata{
-		ItemsPerPage: req.Limit,
-		CurrentPage:  req.Page,
-	}
-
-	var orgs []*model.User
+	var users []*model.User
 	var errors []string
+
+	query := model.UserPagination{
+		Items: &users,
+		Meta: model.PaginationMetadata{
+			ItemsPerPage: req.Limit,
+			CurrentPage:  req.Page,
+		},
+	}
 
 	res = &proto.UserPaginationResponse{
 		Data: &proto.UserPagination{
 			Items: nil,
-			Meta:  &meta,
+			Meta:  nil,
 		},
 		Errors:     errors,
 		StatusCode: http.StatusOK,
 	}
 
-	err = s.repository.FindAll(&meta, &orgs)
+	err = s.repository.FindAll(&query)
 	if err != nil {
 		errors = append(errors, err.Error())
 		res.StatusCode = http.StatusBadRequest
@@ -54,17 +56,24 @@ func (s *UserService) FindAll(_ context.Context, req *proto.FindAllUserRequest) 
 
 	var result []*proto.User
 
-	for _, org := range orgs {
-		result = append(result, RawToDtoUser(org))
+	for _, user := range *query.Items {
+		result = append(result, RawToDtoUser(user))
 	}
 
 	res.Data.Items = result
+	res.Data.Meta = &proto.PaginationMetadata{
+		TotalItem:    query.Meta.TotalItem,
+		ItemCount:    query.Meta.ItemCount,
+		ItemsPerPage: query.Meta.ItemsPerPage,
+		TotalPage:    query.Meta.TotalPage,
+		CurrentPage:  query.Meta.CurrentPage,
+	}
 
 	return
 }
 
 func (s *UserService) FindOne(_ context.Context, req *proto.FindOneUserRequest) (res *proto.UserResponse, err error) {
-	org := model.User{}
+	user := model.User{}
 	var errors []string
 
 	res = &proto.UserResponse{
@@ -73,20 +82,20 @@ func (s *UserService) FindOne(_ context.Context, req *proto.FindOneUserRequest) 
 		StatusCode: http.StatusOK,
 	}
 
-	err = s.repository.FindOne(uint(req.Id), &org)
+	err = s.repository.FindOne(uint(req.Id), &user)
 	if err != nil {
 		res.Errors = append(errors, err.Error())
 		res.StatusCode = http.StatusNotFound
 		return
 	}
 
-	result := RawToDtoUser(&org)
+	result := RawToDtoUser(&user)
 	res.Data = result
 	return
 }
 
 func (s *UserService) FindMulti(_ context.Context, req *proto.FindMultiUserRequest) (res *proto.UserListResponse, err error) {
-	var orgs []*model.User
+	var users []*model.User
 	var errors []string
 
 	res = &proto.UserListResponse{
@@ -95,7 +104,7 @@ func (s *UserService) FindMulti(_ context.Context, req *proto.FindMultiUserReque
 		StatusCode: http.StatusOK,
 	}
 
-	err = s.repository.FindMulti(req.Ids, &orgs)
+	err = s.repository.FindMulti(req.Ids, &users)
 	if err != nil {
 		res.Errors = append(errors, err.Error())
 		res.StatusCode = http.StatusNotFound
@@ -103,8 +112,8 @@ func (s *UserService) FindMulti(_ context.Context, req *proto.FindMultiUserReque
 	}
 
 	var result []*proto.User
-	for _, org := range orgs {
-		result = append(result, RawToDtoUser(org))
+	for _, user := range users {
+		result = append(result, RawToDtoUser(user))
 	}
 
 	res.Data = result
@@ -113,7 +122,7 @@ func (s *UserService) FindMulti(_ context.Context, req *proto.FindMultiUserReque
 }
 
 func (s *UserService) Create(_ context.Context, req *proto.CreateUserRequest) (res *proto.UserResponse, err error) {
-	org := DtoToRawUser(req.User)
+	user := DtoToRawUser(req.User)
 	var errors []string
 
 	res = &proto.UserResponse{
@@ -122,21 +131,21 @@ func (s *UserService) Create(_ context.Context, req *proto.CreateUserRequest) (r
 		StatusCode: http.StatusCreated,
 	}
 
-	err = s.repository.Create(org)
+	err = s.repository.Create(user)
 	if err != nil {
 		res.Errors = append(errors, err.Error())
 		res.StatusCode = http.StatusUnprocessableEntity
 		return
 	}
 
-	result := RawToDtoUser(org)
+	result := RawToDtoUser(user)
 	res.Data = result
 
 	return
 }
 
 func (s *UserService) Update(_ context.Context, req *proto.UpdateUserRequest) (res *proto.UserResponse, err error) {
-	org := DtoToRawUser(req.User)
+	user := DtoToRawUser(req.User)
 	var errors []string
 
 	res = &proto.UserResponse{
@@ -145,21 +154,21 @@ func (s *UserService) Update(_ context.Context, req *proto.UpdateUserRequest) (r
 		StatusCode: http.StatusOK,
 	}
 
-	err = s.repository.Update(uint(org.ID), org)
+	err = s.repository.Update(uint(user.ID), user)
 	if err != nil {
 		res.Errors = append(errors, err.Error())
 		res.StatusCode = http.StatusNotFound
 		return
 	}
 
-	result := RawToDtoUser(org)
+	result := RawToDtoUser(user)
 	res.Data = result
 
 	return
 }
 
 func (s *UserService) Delete(_ context.Context, req *proto.DeleteUserRequest) (res *proto.UserResponse, err error) {
-	org := model.User{}
+	user := model.User{}
 	var errors []string
 
 	res = &proto.UserResponse{
@@ -168,14 +177,14 @@ func (s *UserService) Delete(_ context.Context, req *proto.DeleteUserRequest) (r
 		StatusCode: http.StatusOK,
 	}
 
-	err = s.repository.Delete(uint(req.Id), &org)
+	err = s.repository.Delete(uint(req.Id), &user)
 	if err != nil {
 		res.Errors = append(errors, err.Error())
 		res.StatusCode = http.StatusNotFound
 		return
 	}
 
-	result := RawToDtoUser(&org)
+	result := RawToDtoUser(&user)
 	res.Data = result
 
 	return
