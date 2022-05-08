@@ -26,7 +26,7 @@ func (r *UserRepository) FindAll(pagination *model.UserPagination) error {
 			return err
 		}
 
-		err = r.db.Scopes(Pagination(&pagination.Items, &pagination.Meta, r.db)).Find(&pagination.Items).Count(&pagination.Meta.ItemCount).Error
+		err = r.db.Scopes(Pagination(&pagination.Items, &pagination.Meta, r.db)).Find(&pagination.Items).Error
 		if err != nil {
 			return err
 		}
