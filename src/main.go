@@ -2,10 +2,16 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"github.com/samithiwat/samithiwat-backend-user/src/config"
 	"github.com/samithiwat/samithiwat-backend-user/src/database"
+	seed "github.com/samithiwat/samithiwat-backend-user/src/database/seeds"
+	"github.com/samithiwat/samithiwat-backend-user/src/proto"
+	"github.com/samithiwat/samithiwat-backend-user/src/repository"
+	"github.com/samithiwat/samithiwat-backend-user/src/service"
 	"google.golang.org/grpc"
+	"gorm.io/gorm"
 	"log"
 	"net"
 	"os"
@@ -60,6 +66,22 @@ func gracefulShutdown(ctx context.Context, timeout time.Duration, ops map[string
 	return wait
 }
 
+func handleArgs(db *gorm.DB) {
+	flag.Parse()
+	args := flag.Args()
+
+	if len(args) >= 1 {
+		switch args[0] {
+		case "seed":
+			err := seed.Execute(db, args[1:]...)
+			if err != nil {
+				log.Fatalln("Not found seed")
+			}
+			os.Exit(0)
+		}
+	}
+}
+
 func main() {
 	conf, err := config.LoadConfig()
 	if err != nil {
@@ -76,12 +98,19 @@ func main() {
 		log.Fatal("Cannot connect to redis: ", err.Error())
 	}
 
+	handleArgs(db)
+
 	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%v", conf.App.Port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
+	usrRepo := repository.NewUserRepository(db, cache)
+	usrSrv := service.NewUserService(usrRepo)
+
 	grpcServer := grpc.NewServer()
+
+	proto.RegisterUserServiceServer(grpcServer, usrSrv)
 
 	go func() {
 		fmt.Println(fmt.Sprintf("samithiwat user service starting at port %v", conf.App.Port))

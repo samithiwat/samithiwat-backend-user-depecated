@@ -20,3 +20,6 @@ compose-up:
 
 compose-down:
 	docker-compose --env-file .env.dev down
+
+seed:
+	go run ./src/. seed
