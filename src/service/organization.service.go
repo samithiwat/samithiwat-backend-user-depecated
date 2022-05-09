@@ -23,7 +23,7 @@ func (s *OrganizationService) FindOne(id uint) (res *proto.OrganizationResponse,
 	res, err = s.client.FindOne(ctx, &proto.FindOneOrganizationRequest{Id: int32(id)})
 	if err != nil {
 		res.Errors = append(res.Errors, err.Error())
-		return
+		return res, nil
 	}
 
 	return
@@ -36,7 +36,7 @@ func (s *OrganizationService) FindMulti(ids []uint32) (res *proto.OrganizationLi
 	res, err = s.client.FindMulti(ctx, &proto.FindMultiOrganizationRequest{Ids: ids})
 	if err != nil {
 		res.Errors = append(res.Errors, err.Error())
-		return
+		return res, nil
 	}
 
 	return

@@ -23,7 +23,7 @@ func (s *LocationService) FindOne(id uint) (res *proto.LocationResponse, err err
 	res, err = s.client.FindOne(ctx, &proto.FindOneLocationRequest{Id: int32(id)})
 	if err != nil {
 		res.Errors = append(res.Errors, err.Error())
-		return
+		return res, nil
 	}
 
 	return
@@ -36,7 +36,7 @@ func (s *LocationService) FindMulti(ids []uint32) (res *proto.LocationListRespon
 	res, err = s.client.FindMulti(ctx, &proto.FindMultiLocationRequest{Ids: ids})
 	if err != nil {
 		res.Errors = append(res.Errors, err.Error())
-		return
+		return res, nil
 	}
 
 	return

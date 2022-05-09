@@ -51,7 +51,7 @@ func (s *UserService) FindAll(_ context.Context, req *proto.FindAllUserRequest) 
 	if err != nil {
 		errors = append(errors, err.Error())
 		res.StatusCode = http.StatusBadRequest
-		return
+		return res, nil
 	}
 
 	var result []*proto.User
@@ -86,7 +86,7 @@ func (s *UserService) FindOne(_ context.Context, req *proto.FindOneUserRequest) 
 	if err != nil {
 		res.Errors = append(errors, err.Error())
 		res.StatusCode = http.StatusNotFound
-		return
+		return res, nil
 	}
 
 	result := RawToDtoUser(&user)
@@ -108,7 +108,7 @@ func (s *UserService) FindMulti(_ context.Context, req *proto.FindMultiUserReque
 	if err != nil {
 		res.Errors = append(errors, err.Error())
 		res.StatusCode = http.StatusNotFound
-		return
+		return res, nil
 	}
 
 	var result []*proto.User
@@ -135,7 +135,7 @@ func (s *UserService) Create(_ context.Context, req *proto.CreateUserRequest) (r
 	if err != nil {
 		res.Errors = append(errors, err.Error())
 		res.StatusCode = http.StatusUnprocessableEntity
-		return
+		return res, nil
 	}
 
 	result := RawToDtoUser(user)
@@ -158,7 +158,7 @@ func (s *UserService) Update(_ context.Context, req *proto.UpdateUserRequest) (r
 	if err != nil {
 		res.Errors = append(errors, err.Error())
 		res.StatusCode = http.StatusNotFound
-		return
+		return res, nil
 	}
 
 	result := RawToDtoUser(user)
@@ -181,7 +181,7 @@ func (s *UserService) Delete(_ context.Context, req *proto.DeleteUserRequest) (r
 	if err != nil {
 		res.Errors = append(errors, err.Error())
 		res.StatusCode = http.StatusNotFound
-		return
+		return res, nil
 	}
 
 	result := RawToDtoUser(&user)
