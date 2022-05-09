@@ -15,7 +15,6 @@ type Database struct {
 
 type Redis struct {
 	Host string `mapstructure:"host"`
-	Port int    `mapstructure:"port"`
 }
 
 type App struct {
