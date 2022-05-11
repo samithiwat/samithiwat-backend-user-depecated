@@ -154,7 +154,7 @@ func (s *UserService) Update(_ context.Context, req *proto.UpdateUserRequest) (r
 		StatusCode: http.StatusOK,
 	}
 
-	err = s.repository.Update(uint(user.ID), user)
+	err = s.repository.Update(user.ID, user)
 	if err != nil {
 		res.Errors = append(errors, err.Error())
 		res.StatusCode = http.StatusNotFound
