@@ -32,7 +32,7 @@ func (r *UserRepository) FindAll(pagination *model.UserPagination) error {
 			return err
 		}
 
-		return SaveCache(r.cache, "users", pagination)
+		return SaveCache(r.cache, fmt.Sprintf("user-%v", pagination.Meta.CurrentPage), pagination)
 	}
 
 	return nil
