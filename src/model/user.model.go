@@ -7,6 +7,7 @@ type User struct {
 	Firstname     string          `json:"firstname"`
 	Lastname      string          `json:"lastname"`
 	ImageUrl      string          `json:"image_url"`
+	DisplayName   string          `json:"display_name"`
 	Organizations []*Organization `json:"organizations" gorm:"many2many:user_organization;"`
 	Teams         []*Team         `json:"teams" gorm:"many2many:user_team;"`
 	Roles         []*Role         `json:"roles" gorm:"many2many:user_role;"`
