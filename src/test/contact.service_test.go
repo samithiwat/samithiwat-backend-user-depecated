@@ -43,9 +43,8 @@ func TestFindOneErrGrpcContact(t *testing.T) {
 	}
 
 	contactService := service.NewContactService(&mock.ContactMockErrClient{})
-	contactRes, err := contactService.FindOne(1)
+	contactRes, _ := contactService.FindOne(1)
 
-	assert.True(err != nil, "Must got an error")
 	assert.Equal(want, contactRes)
 }
 

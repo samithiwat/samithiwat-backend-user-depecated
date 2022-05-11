@@ -43,9 +43,8 @@ func TestFindOneErrGrpcLocation(t *testing.T) {
 	}
 
 	locService := service.NewLocationService(&mock.LocationMockErrClient{})
-	locRes, err := locService.FindOne(1)
+	locRes, _ := locService.FindOne(1)
 
-	assert.True(err != nil, "Must got an error")
 	assert.Equal(want, locRes)
 }
 

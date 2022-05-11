@@ -81,9 +81,8 @@ func TestFindOneErrNotFoundUser(t *testing.T) {
 	}
 
 	usrService := service.NewUserService(&mock.UserMockErrRepo{})
-	usrRes, err := usrService.FindOne(mock.Context{}, &proto.FindOneUserRequest{Id: 1})
+	usrRes, _ := usrService.FindOne(mock.Context{}, &proto.FindOneUserRequest{Id: 1})
 
-	assert.True(err != nil, "Must got an error")
 	assert.Equal(want, usrRes)
 }
 
@@ -143,9 +142,8 @@ func TestUpdateErrNotFoundUser(t *testing.T) {
 	}
 
 	usrService := service.NewUserService(&mock.UserMockErrRepo{})
-	usrRes, err := usrService.Update(mock.Context{}, &mock.UpdateUserReqMock)
+	usrRes, _ := usrService.Update(mock.Context{}, &mock.UpdateUserReqMock)
 
-	assert.True(err != nil, "Must got an error")
 	assert.Equal(want, usrRes)
 }
 
@@ -184,8 +182,7 @@ func TestDeleteErrNotFoundUser(t *testing.T) {
 	}
 
 	usrService := service.NewUserService(&mock.UserMockErrRepo{})
-	usrRes, err := usrService.Delete(mock.Context{}, &proto.DeleteUserRequest{Id: 1})
+	usrRes, _ := usrService.Delete(mock.Context{}, &proto.DeleteUserRequest{Id: 1})
 
-	assert.True(err != nil, "Must got an error")
 	assert.Equal(want, usrRes)
 }

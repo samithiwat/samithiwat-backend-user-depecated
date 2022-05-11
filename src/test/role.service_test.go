@@ -43,9 +43,8 @@ func TestFindOneErrGrpcRole(t *testing.T) {
 	}
 
 	locService := service.NewRoleService(&mock.RoleMockErrClient{})
-	locRes, err := locService.FindOne(1)
+	locRes, _ := locService.FindOne(1)
 
-	assert.True(err != nil, "Must got an error")
 	assert.Equal(want, locRes)
 }
 

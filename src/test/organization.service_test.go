@@ -43,9 +43,8 @@ func TestFindOneErrGrpcOrganization(t *testing.T) {
 	}
 
 	locService := service.NewOrganizationService(&mock.OrganizationMockErrClient{})
-	locRes, err := locService.FindOne(1)
+	locRes, _ := locService.FindOne(1)
 
-	assert.True(err != nil, "Must got an error")
 	assert.Equal(want, locRes)
 }
 
