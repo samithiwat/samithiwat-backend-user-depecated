@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"github.com/go-redis/redis/v8"
 	"github.com/samithiwat/samithiwat-backend-user/src/model"
 	"gorm.io/gorm"
@@ -20,7 +21,7 @@ func NewUserRepository(db *gorm.DB, cache *redis.Client) *UserRepository {
 }
 
 func (r *UserRepository) FindAll(pagination *model.UserPagination) error {
-	err := GetCache(r.cache, "users", pagination)
+	err := GetCache(r.cache, fmt.Sprintf("user-%v", pagination.Meta.CurrentPage), pagination)
 	if err != nil {
 		if err != redis.Nil {
 			return err
